@@ -23,17 +23,12 @@ struct ConfigData {
 
 int main(int argc, char **argv)
 {
-    std::vector<string> args;
-    for(int i = 0; i < argc; i++) {
-        args.push_back(argv[i]); // Transferring arguments to a vector, will be useful later.
-    }
-
-    if(args.size() <= 1) {
+    if(argc <= 1) {
         printerr("Please input arguments.\n");
         return 1;
     }
 
-    if(args[1] == "init") {
+    if(((string)argv[1]) == "init") { // im lazy so im casting this to an std::string
         if(fs::exists(".bmmake")) {
             printerr("the \".bmmake\" directory already exists!\n");
             return 1;
@@ -51,7 +46,9 @@ int main(int argc, char **argv)
     ConfigData configdata;
     string __tmp_call, __tmp_cmd;
     std::ifstream config(".bmmake/config");
-    while(config >> __tmp_call >> __tmp_cmd) {
+    while(config >> __tmp_call) {
+        std::getline(config >> std::ws, __tmp_cmd); // just found out that i can capture the rest of the string put into a line lol
+
         configdata.call.push_back(__tmp_call);
         configdata.cmd.push_back(__tmp_cmd);
     }
@@ -63,8 +60,8 @@ int main(int argc, char **argv)
     }
 
     for(int i = 0; i < configdata.call.size(); i++) {
-        if(args[1] == configdata.call[i]) {
-            std::cout << Colour::Cyan << "> " << Colour::White << configdata.cmd[i] << "\n";
+        if(argv[1] == configdata.call[i]) {
+            std::cout << Colour::Cyan << "> " << Colour::White << configdata.cmd[i] << "\n"; // cool ahh doing stuff effects
             system(configdata.cmd[i].c_str());
         }
     }
